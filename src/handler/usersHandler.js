@@ -113,3 +113,51 @@ export const addUsersHandler = async (req, res) => {
     throw error;
   }
 };
+
+export const updateUsersHandler = async (req, res) => {
+  const { id } = req.params;
+  const {
+    fullname,
+    username,
+    email,
+    password,
+    role,
+    address,
+    phone_number,
+    age,
+  } = req.body;
+  try {
+    await pool.query(
+      "UPDATE users SET fullname=?, username=?, email=?, password=?, role=?, address=?, phone_number=?, age=? WHERE id=?",
+      [
+        fullname,
+        username,
+        email,
+        password,
+        role,
+        address,
+        phone_number,
+        age,
+        id,
+      ]
+    );
+
+    const userUpdate = await pool.query(
+      "SELECT id, fullname, username, email, role, address, phone_number, age FROM users WHERE id=?",
+      [id]
+    );
+
+    res.status(201).json({
+      status: "success",
+      message: "user update success",
+      data: userUpdate[0],
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "error",
+      message: "Failed to update user",
+      error: error.message,
+    });
+  }
+};
