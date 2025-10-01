@@ -5,6 +5,8 @@ import useRouter from "./routes/userRoute.js";
 // membuat server
 const app = express();
 const port = 2807;
+
+app.use(express.json());
  
 app.use(useRouter);
 

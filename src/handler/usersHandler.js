@@ -85,8 +85,25 @@ export const addUsersHandler = async (req, res) => {
   }
 
   try {
-    const [users] = await pool.query();
-  } catch {
+    const [users] = await pool.query(
+      "INSERT INTO users (fullname, username, email, password, role) VALUES (?,?,?,?,?)",
+      [fullname, username, email, password, role]
+    );
+
+    const newUser = {
+      id: users.insertId,
+      fullname,
+      username,
+      email,
+      role,
+    };
+
+    res.status(201).json({
+      status: "success",
+      message: "user created success",
+      data: newUser,
+    });
+  } catch (error) {
     console.error(error);
   }
 };
