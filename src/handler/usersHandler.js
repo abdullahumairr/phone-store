@@ -4,7 +4,9 @@ import { pool } from "../config/db.js";
 
 export const getAllUsersHandler = async (req, res) => {
   try {
-    const [users] = await pool.query("SELECT * FROM users");
+    const [users] = await pool.query(
+      "SELECT id, fullname, username, email, role, address, phone_number, age FROM users"
+    );
 
     res.status(200).json({
       status: "success",
@@ -20,7 +22,10 @@ export const getUserByIdHandler = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const [users] = await pool.query("SELECT * FROM users WHERE id=?", [id]);
+    const [users] = await pool.query(
+      "SELECT id, fullname, username, email, role, address, phone_number, age FROM users WHERE id=?",
+      [id]
+    );
 
     if (users.length === 0) {
       return res.status(404).json({
@@ -105,5 +110,6 @@ export const addUsersHandler = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    throw error;
   }
 };
