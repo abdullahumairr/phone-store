@@ -4,7 +4,7 @@ export const pool = mysql.createPool({
     host: "localhost",
     user: "root",
     password: "",
-    database: "toko_online",
+    database: "toko_online", 
 });
 
 export const testConnection = async () => {
