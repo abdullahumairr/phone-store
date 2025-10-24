@@ -15,11 +15,14 @@ export const getUserByIdHandler = async (id) => {
     [id]
   );
 
+  console.log(users);
+
   if (users.length === 0) {
-    throw new ResponseError("user not found");
+    throw new ResponseError(404, "user not found");
   }
 
   return users[0];
+  ``;
 };
 
 export const createUsersHandler = async (request) => {
@@ -39,4 +42,36 @@ export const createUsersHandler = async (request) => {
   };
 
   return newUser;
+};
+
+export const updateUsersHandler = async (id, request) => {
+  const {
+    fullname,
+    username,
+    email,
+    password,
+    role,
+    address,
+    phone_number,
+    age,
+  } = request;
+  const [users] = await pool.query(
+    "UPDATE users SET fullname=?, username=?, email=?, password=?, role=?, address=?, phone_number=?, age=? WHERE id=?",
+    [fullname, username, email, password, role, address, phone_number, age, id]
+  );
+
+  const userUpdate = await pool.query(
+    "SELECT id, fullname, username, email, role, address, phone_number, age FROM users WHERE id=?",
+    [id]
+  );
+
+  return userUpdate[0];
+};
+
+export const deleteUsersHandler = async (id, request) => {
+  const [deleteUsers] = await pool.query("DELETE FROM users WHERE id=?", [id]);
+
+  if (deleteUsers.affectedRows === 0) {
+    throw new ResponseError(404, "user not found");
+  }
 };

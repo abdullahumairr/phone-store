@@ -40,3 +40,33 @@ export const createUsersHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateUsersHandler = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const response = await UserService.updateUsersHandler(id, req.body);
+
+    res.status(201).json({
+      status: "success",
+      message: "user update successfully",
+      data: response,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteUsersHandler = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const response = await UserService.deleteUsersHandler(id, req.body);
+
+    res.status(201).json({
+      status: "success",
+      message: "user delete successfully",
+      data: response,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
