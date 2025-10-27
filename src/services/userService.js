@@ -15,7 +15,6 @@ export const getUserByIdHandler = async (id) => {
     [id]
   );
 
-
   if (users.length === 0) {
     throw new ResponseError(404, "user not found");
   }
