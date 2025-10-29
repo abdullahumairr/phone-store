@@ -3,10 +3,13 @@ import { testConnection } from "./config/db.js";
 import useRouter from "./routes/userRoute.js";
 import productRouter from "./routes/productRoute.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
+import cors from "cors";
 
 // membuat server
 const app = express();
 const port = 2807;
+
+app.use(cors());
 
 app.use(express.json());
 
