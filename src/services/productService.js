@@ -1,5 +1,9 @@
 import { pool } from "../config/db.js";
 import { ResponseError } from "../errors/responseError.js";
+import {
+  createProductSchema,
+  updateProductSchema,
+} from "../validations/productValidation.js";
 
 export const getAllProductsHandler = async () => {
   const [products] = await pool.query(
@@ -24,7 +28,8 @@ export const getProductByIdHandler = async (id) => {
 };
 
 export const createProductHandler = async (request) => {
-  const { user_id, name, description, price, stock } = request;
+  const validated = validate(createProductSchema, request);
+  const { user_id, name, description, price, stock } = validated;
 
   const [products] = await pool.query(
     "INSERT INTO products (user_id, name, description, price, stock) VALUES (?,?,?,?,?)",
@@ -44,22 +49,25 @@ export const createProductHandler = async (request) => {
 };
 
 export const updateProductHandler = async (id, request) => {
-  const { user_id, name, description, price, stock } = request;
+  const validated = validate(updateProductSchema, request);
+  const { user_id, name, description, price, stock } = validated;
   const [products] = await pool.query(
     "UPDATE products SET user_id=?, name=?, description=?, price=?, stock=? WHERE id=?",
-      [user_id, name, description, price, stock, id]
+    [user_id, name, description, price, stock, id]
   );
 
   const productUpdate = await pool.query(
-   "SELECT id, user_id, name, description, price, stock FROM products WHERE id=?",
-      [id]
+    "SELECT id, user_id, name, description, price, stock FROM products WHERE id=?",
+    [id]
   );
 
   return productUpdate[0];
 };
 
 export const deleteProductHandler = async (id, request) => {
-  const [deleteProduct] = await pool.query("DELETE FROM products WHERE id=?", [id]);
+  const [deleteProduct] = await pool.query("DELETE FROM products WHERE id=?", [
+    id,
+  ]);
 
   if (deleteProduct.affectedRows === 0) {
     throw new ResponseError(404, "product not found");

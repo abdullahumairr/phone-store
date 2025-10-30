@@ -58,7 +58,7 @@ export const updateUsersHandler = async (id, request) => {
     address,
     phone_number,
     age,
-  } = request;
+  } = validated;
   const [users] = await pool.query(
     "UPDATE users SET fullname=?, username=?, email=?, password=?, role=?, address=?, phone_number=?, age=? WHERE id=?",
     [fullname, username, email, password, role, address, phone_number, age, id]
