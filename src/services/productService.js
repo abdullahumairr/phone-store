@@ -4,6 +4,7 @@ import {
   createProductSchema,
   updateProductSchema,
 } from "../validations/productValidation.js";
+import validate from "../validations/validate.js";
 
 export const getAllProductsHandler = async () => {
   const [products] = await pool.query(
