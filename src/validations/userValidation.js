@@ -12,13 +12,20 @@ export const updateUserSchema = z.object({
   fullname: z.string().min(3, "fullname minimal 3 karakter").optional(),
   username: z.string().min(3, "username minimal 3 karakter").optional(),
   email: z.string().email("email tidak valid").optional(),
-  password: z.string().min(8, "password minimal 8 karakter").optional(),
+  password: z
+    .union([z.string().min(8, "Password minimal 8 karakter"), z.literal("")])
+    .optional(),
   role: z
     .enum(["admin", "user"], { message: "role harus 'admin' atau 'user'" })
     .optional(),
   address: z.string({ invalid_type_error: "address tidak valid" }).optional(),
   phone_number: z
-    .string({ invalid_type_error: "phone_number tidak valid" })
+    .union([z.string(), z.number()])
+    .transform((val) => val.toString())
     .optional(),
-  age: z.string({ invalid_type_error: "umur tidak valid" }).optional(),
+
+  age: z
+    .union([z.string(), z.number()])
+    .transform((val) => val.toString())
+    .optional(),
 });
