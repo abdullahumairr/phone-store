@@ -1,7 +1,11 @@
 import { pool } from "../config/db.js";
 import { ResponseError } from "../errors/responseError.js";
-import { createUserSchema, updateUserSchema } from "../validations/userValidation.js";
+import {
+  createUserSchema,
+  updateUserSchema,
+} from "../validations/userValidation.js";
 import validate from "../validations/validate.js";
+import bcrypt from "bcrypt";
 
 export const getAllUsersHandler = async () => {
   const [users] = await pool.query(
@@ -30,9 +34,11 @@ export const createUsersHandler = async (request) => {
 
   const { fullname, username, email, password, role } = validated;
 
+  const hashedPassword = await bcrypt.hash(password, 10);
+
   const [users] = await pool.query(
     "INSERT INTO users (fullname, username, email, password, role) VALUES (?,?,?,?,?)",
-    [fullname, username, email, password, role]
+    [fullname, username, email, hashedPassword, role]
   );
 
   const newUser = {
@@ -47,7 +53,7 @@ export const createUsersHandler = async (request) => {
 };
 
 export const updateUsersHandler = async (id, request) => {
-    const validated = validate(updateUserSchema, request);
+  const validated = validate(updateUserSchema, request);
 
   const {
     fullname,
@@ -59,13 +65,30 @@ export const updateUsersHandler = async (id, request) => {
     phone_number,
     age,
   } = validated;
-  const [users] = await pool.query(
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const [result] = await pool.query(
     "UPDATE users SET fullname=?, username=?, email=?, password=?, role=?, address=?, phone_number=?, age=? WHERE id=?",
-    [fullname, username, email, password, role, address, phone_number, age, id]
+    [
+      fullname,
+      username,
+      email,
+      hashedPassword,
+      role,
+      address,
+      phone_number,
+      age,
+      id,
+    ]
   );
 
-  const userUpdate = await pool.query(
-    "SELECT id, fullname, username, email, role, address, phone_number, age FROM users WHERE id=?",
+  if (result.affectedRows === 0) {
+    throw new ResponseError(404, "Product not found");
+  }
+
+  const [userUpdate] = await pool.query(
+    "SELECT fullname, username, email, role, address, phone_number, age FROM users WHERE id=?",
     [id]
   );
 
