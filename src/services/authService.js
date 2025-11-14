@@ -26,7 +26,6 @@ export const register = async (request) => {
       username,
       email,
       hashedPassword,
-      password,
       role,
       address,
       phone_number,
