@@ -1,7 +1,9 @@
+import { request } from "express";
 import { pool } from "../config/db.js";
-import { registerSchema } from "../validations/authValidation.js";
+import { loginSchema, registerSchema } from "../validations/authValidation.js";
 import validate from "../validations/validate.js";
 import bcrypt from "bcrypt";
+import { ResponseError } from "../errors/responseError.js";
 
 export const register = async (request) => {
   const validated = validate(registerSchema, request);
@@ -45,4 +47,35 @@ export const register = async (request) => {
   };
 
   return newUser;
+};
+
+export const login = async (request) => {
+  const { email, password } = validate(loginSchema, request);
+
+  const { rows } = await pool.query("SELECT * FROM users WHERE =? LIMIT 1", [
+    email,
+  ]);
+
+  if (rows.length === 0) {
+    throw new ResponseError(401, "email atau password salah");
+  }
+
+  const user = rows[0];
+
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    throw new ResponseError(401, "email atau password salah");
+  }
+
+  return {
+    id: users.id,
+    fullname: user.fullname,
+    username: user.username,
+    email: user.email,
+    role: user.role,
+    address: user.address,
+    phone_number: user.phone_number,
+    age: user.age,
+  };
 };
