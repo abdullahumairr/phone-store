@@ -1,4 +1,3 @@
-import { request } from "express";
 import { pool } from "../config/db.js";
 import { loginSchema, registerSchema } from "../validations/authValidation.js";
 import validate from "../validations/validate.js";
@@ -52,9 +51,10 @@ export const register = async (request) => {
 export const login = async (request) => {
   const { email, password } = validate(loginSchema, request);
 
-  const [rows] = await pool.query("SELECT * FROM users WHERE email=? LIMIT 1", [
-    email,
-  ]);
+  const [rows] = await pool.query(
+    "SELECT * FROM users WHERE email = ? LIMIT 1",
+    [email]
+  );
 
   if (rows.length === 0) {
     throw new ResponseError(401, "email atau password salah");
@@ -69,7 +69,7 @@ export const login = async (request) => {
   }
 
   return {
-    id: users.id,
+    id: user.id,
     fullname: user.fullname,
     username: user.username,
     email: user.email,
